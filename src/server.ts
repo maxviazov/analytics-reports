@@ -1,7 +1,9 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
+import dbConnection, { client } from "./models/dbConnection";
 
 dotenv.config();
+dbConnection(); // Connection with the database
 
 const app: Express = express();
 const port = process.env.PORT || 5000;
