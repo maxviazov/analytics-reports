@@ -1,5 +1,5 @@
 import { Client } from "pg";
-import { dbConfig } from "./constants";
+import { dbConfig } from "../constants";
 export const client = new Client(dbConfig);
 
 export default async () => {
