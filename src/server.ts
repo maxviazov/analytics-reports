@@ -1,6 +1,7 @@
-import express, { Express, Request, Response } from "express";
+import express, { Express } from "express";
 import dotenv from "dotenv";
-import dbConnection, { client } from "./models/dbConnection";
+import dbConnection from "./models/dbConnection";
+import careerPage from "./routes/careerPage";
 
 dotenv.config();
 dbConnection(); // Connection with the database
@@ -8,9 +9,7 @@ dbConnection(); // Connection with the database
 const app: Express = express();
 const port = process.env.PORT || 5000;
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Express + TypeScript Server");
-});
+app.use("/careerPage", careerPage);
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
