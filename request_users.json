@@ -1,0 +1,30 @@
+{
+  "topic": "analytics-reports",
+  "message": {
+    "type": "users",
+    "data": {
+      "accountId": {
+        "registrationDate": "Date, YYYY-MM-DD",
+        "postponedDate": "YYYY-MM-DD",
+        "deleteDate": "YYYY-MM-DD",
+        "signInDates": "YYYY-MM-DD",
+        "app": "string",
+        "signInMethod": "string",
+        "userInvitations": "string"
+      },
+      "location": {
+        "continent": "string",
+        "country": "string",
+        "state": "string",
+        "city": "string"
+      },
+      "language": "string",
+      "connectionsData": "string",
+      "onBoarding": {
+        "stepsCompleted": "number",
+        "completeDate": "Date | null",
+        "users": "User[]"
+      }
+    }
+  }
+}

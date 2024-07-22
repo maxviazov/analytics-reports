@@ -1,0 +1,26 @@
+image: node:22.4.1
+
+pipelines:
+  default:
+    - step:
+        name: Build and Deploy
+        caches:
+          - node
+        script:
+          - echo "Install dependencies"
+          - yarn install
+          - echo "Build the project"
+          - yarn build
+          - echo "Run migrations"
+          - yarn migration:run
+          - echo "Deploying to server"
+          - scp -r -i ~/.ssh/id_rsa ./dist user@your-server:/path/to/deploy
+          - echo "Starting the application"
+          - ssh -i ~/.ssh/id_rsa user@your-server 'cd /path/to/deploy && yarn start:prod'
+        services:
+          - docker
+
+definitions:
+  services:
+    docker:
+      memory: 1024

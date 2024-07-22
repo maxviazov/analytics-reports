@@ -1,0 +1,76 @@
+# .gitignore file for a Node.js project
+
+# Compiled output directories
+/dist/
+/node_modules/
+/build/
+
+# Log files
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Operating System generated files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# Test directories
+/coverage
+/.nyc_output
+
+# IDEs and editors configuration files
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode specific settings
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# dotenv environment variable files
+.env*
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# Temporary directories
+.temp
+.tmp
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# npm and yarn cache and integrity files
+.npm/
+.yarn-integrity
+
+# Docker configuration files
+.docker/
+docker-compose*.yml
+
+# Python temporary files
+*.py[cod]
+__pycache__/
+
+# Database files
+/data/db/
