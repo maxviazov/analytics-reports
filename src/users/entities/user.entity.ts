@@ -21,7 +21,10 @@ export class User {
    * Associated account of the user
    * @example { id: 1, name: 'John Doe' }
    */
-  @ApiProperty({ example: { id: 1, name: 'John Doe' }, description: 'Associated account of the user' })
+  @ApiProperty({
+    example: { id: 1, name: 'John Doe' },
+    description: 'Associated account of the user',
+  })
   @ManyToOne(() => Account)
   @JoinColumn({ name: 'account_id' })
   account: Account;
@@ -30,7 +33,10 @@ export class User {
    * Associated location of the user
    * @example { id: 1, city: 'San Francisco' }
    */
-  @ApiProperty({ example: { id: 1, city: 'San Francisco' }, description: 'Associated location of the user' })
+  @ApiProperty({
+    example: { id: 1, city: 'San Francisco' },
+    description: 'Associated location of the user',
+  })
   @ManyToOne(() => Location)
   @JoinColumn({ name: 'location_id' })
   location: Location;
@@ -47,7 +53,10 @@ export class User {
    * Data related to user connections
    * @example '{"friends": ["user1", "user2"]}'
    */
-  @ApiProperty({ example: '{"friends": ["user1", "user2"]}', description: 'Data related to user connections' })
+  @ApiProperty({
+    example: '{"friends": ["user1", "user2"]}',
+    description: 'Data related to user connections',
+  })
   @Column({ name: 'connections_data', length: 255 })
   connectionsData: string;
 
@@ -55,7 +64,10 @@ export class User {
    * Associated onboarding process of the user
    * @example { id: 1, stepsCompleted: 3 }
    */
-  @ApiProperty({ example: { id: 1, stepsCompleted: 3 }, description: 'Associated onboarding process of the user' })
+  @ApiProperty({
+    example: { id: 1, stepsCompleted: 3 },
+    description: 'Associated onboarding process of the user',
+  })
   @ManyToOne(() => Onboarding)
   @JoinColumn({ name: 'onboarding_id' })
   onBoarding: Onboarding;

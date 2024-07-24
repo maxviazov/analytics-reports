@@ -16,8 +16,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {
-  }
+  ) {}
 
   /**
    * Create a new user
@@ -25,7 +24,11 @@ export class UsersService {
    * @returns The created user entity
    */
   @ApiOperation({ summary: 'Create a new user' })
-  @ApiResponse({ status: 201, description: 'The user has been successfully created.', type: User })
+  @ApiResponse({
+    status: 201,
+    description: 'The user has been successfully created.',
+    type: User,
+  })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 500, description: 'Internal Server Error.' })
   async createUser(createUserDto: CreateUserDto): Promise<User> {
@@ -47,7 +50,11 @@ export class UsersService {
    * @returns Array of user entities
    */
   @ApiOperation({ summary: 'Retrieve all users' })
-  @ApiResponse({ status: 200, description: 'Successfully retrieved all users.', type: [User] })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully retrieved all users.',
+    type: [User],
+  })
   @ApiResponse({ status: 500, description: 'Internal Server Error.' })
   async findAll(): Promise<User[]> {
     try {
@@ -66,7 +73,11 @@ export class UsersService {
    * @returns The user entity if found
    */
   @ApiOperation({ summary: 'Retrieve a user by ID' })
-  @ApiResponse({ status: 200, description: 'Successfully retrieved the user.', type: User })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully retrieved the user.',
+    type: User,
+  })
   @ApiResponse({ status: 404, description: 'User not found.' })
   @ApiResponse({ status: 500, description: 'Internal Server Error.' })
   async findOne(id: number): Promise<User> {

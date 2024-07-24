@@ -12,7 +12,9 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strict": true
+    "strict": true,
+    "esModuleInterop": true,
+    "types": ["node", "express"]
   },
   "include": [
     "src/**/*.ts"

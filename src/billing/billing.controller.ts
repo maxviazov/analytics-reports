@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, UseFilters, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  UseFilters,
+  UseInterceptors,
+} from '@nestjs/common';
 import { BillingService } from './billing.service';
 import { CreateBillingDto } from './dto/create-billing.dto';
 import { LoggingInterceptor } from '../logging/logging.interceptor';
@@ -10,8 +18,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 @UseInterceptors(LoggingInterceptor)
 @UseFilters(HttpExceptionFilter)
 export class BillingController {
-  constructor(private readonly billingService: BillingService) {
-  }
+  constructor(private readonly billingService: BillingService) {}
 
   /**
    * Create a new billing record

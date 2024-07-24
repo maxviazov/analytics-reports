@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
+import { setupMiddleware } from './middleware/setupMiddleware';
 import * as dotenv from 'dotenv';
 import { DataSource } from 'typeorm';
 import { Logger } from '@nestjs/common';
@@ -22,6 +23,10 @@ async function bootstrap() {
   const logger = new Logger('bootstrap');
   // Create a new NestJS application instance
   const app = await NestFactory.create(AppModule);
+
+  // Setup middleware
+  setupMiddleware(app);
+
   // Retrieve the DataSource instance to manage database connection
   const dataSource = app.get(DataSource);
   // Retrieve the ConfigService instance (though not used further in this snippet)
