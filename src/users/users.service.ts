@@ -34,18 +34,27 @@ export class UsersService {
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     this.logger.log('Creating a new user');
     try {
-      this.logger.log(
-        `Creating user with data: ${JSON.stringify(createUserDto)}`,
-      );
-      const newUser = this.userRepository.create(createUserDto);
+      this.logger.log(`Creating user with data: ${JSON.stringify(createUserDto)}`);
+
+      const { accountId, locationId, onboardingId, ...rest } = createUserDto;
+
+      const newUser = this.userRepository.create({
+        ...rest,
+        account: { id: accountId } as any,
+        location: { id: locationId } as any,
+        onBoarding: { id: onboardingId } as any,
+      });
+
       this.logger.log(`Saving user to the database ${JSON.stringify(newUser)}`);
-      return await this.userRepository.save(newUser);
-      this.logger.log(`User created successfully ${JSON.stringify(newUser)}`);
+      const savedUser = await this.userRepository.save(newUser);
+      this.logger.log(`User created successfully ${JSON.stringify(savedUser)}`);
+      return savedUser;
     } catch (error: any) {
       this.logger.error('Failed to create user', error.stack);
       throw error;
     }
   }
+
 
   /**
    * Retrieve all users
