@@ -16,7 +16,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {}
+  ) { }
 
   /**
    * Create a new user
@@ -38,7 +38,9 @@ export class UsersService {
         `Creating user with data: ${JSON.stringify(createUserDto)}`,
       );
       const newUser = this.userRepository.create(createUserDto);
+      this.logger.log(`Saving user to the database ${JSON.stringify(newUser)}`);
       return await this.userRepository.save(newUser);
+      this.logger.log(`User created successfully ${JSON.stringify(newUser)}`);
     } catch (error: any) {
       this.logger.error('Failed to create user', error.stack);
       throw error;

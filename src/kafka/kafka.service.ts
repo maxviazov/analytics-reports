@@ -1,5 +1,11 @@
-import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { ClientKafka, Payload } from '@nestjs/microservices';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
+import { Client, ClientKafka, Payload, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
@@ -21,6 +27,23 @@ import { OrganizationsService } from '../organization/organization.service';
 import { PagesService } from '../page/page.service';
 import { InvitationsService } from '../invitation/invitation.service';
 import { PostsService } from '../post/post.service';
+import { CreateOnboardingDto } from 'src/onboarding/dto/create-onboarding.dto';
+import { CreateAccountDto } from 'src/account/dto/create-account.dto';
+import { CreateLandingPageDto } from 'src/landing-page/dto/create-landing-page.dto';
+import { CreateBusinessAccountDto } from 'src/business-account/dto/create-business-account.dto';
+import { CreateCareerPageDto } from 'src/career-page/dto/create-career-page.dto';
+import { CreateCareerPostDto } from 'src/career-post/dto/create-career-post.dto';
+import { CreateTrafficDto } from 'src/traffic/dto/create-traffic.dto';
+import { CreateClientDto } from 'src/client/dto/create-client.dto';
+import { CreateBillingDto } from 'src/billing/dto/create-billing.dto';
+import { CreateJobPageDto } from 'src/job-page/dto/create-job-page.dto';
+import { CreateHiringDto } from 'src/hiring/dto/create-hiring.dto';
+import { CreateLocationDto } from 'src/location/dto/create-location.dto';
+import { CreateBusinessJobDto } from 'src/business-job/dto/create-business-job.dto';
+import { CreateOrganizationDto } from 'src/organization/dto/create-organization.dto';
+import { CreatePageDto } from 'src/page/dto/create-page.dto';
+import { CreateInvitationDto } from 'src/invitation/dto/create-invitation.dto';
+import { CreatePostDto } from 'src/post/dto/create-post.dto';
 
 interface SourceMapEntry {
   service: any;
@@ -29,7 +52,7 @@ interface SourceMapEntry {
 }
 
 @Injectable()
-export class KafkaService implements OnModuleInit {
+export class KafkaService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(KafkaService.name);
   private readonly topicName: string;
 
@@ -41,92 +64,92 @@ export class KafkaService implements OnModuleInit {
     },
     onboarding: {
       service: this.onboardingService,
-      dto: CreateUserDto,
+      dto: CreateOnboardingDto,
       method: 'createOnboarding',
     },
     account: {
       service: this.accountsService,
-      dto: CreateUserDto,
+      dto: CreateAccountDto,
       method: 'createAccount',
     },
     landingPages: {
       service: this.landingPagesService,
-      dto: CreateUserDto,
+      dto: CreateLandingPageDto,
       method: 'createLandingPage',
     },
     businessAccounts: {
       service: this.businessAccountsService,
-      dto: CreateUserDto,
+      dto: CreateBusinessAccountDto,
       method: 'createBusinessAccount',
     },
     careerPages: {
       service: this.careerPagesService,
-      dto: CreateUserDto,
+      dto: CreateCareerPageDto,
       method: 'createCareerPage',
     },
     careerPosts: {
       service: this.careerPostsService,
-      dto: CreateUserDto,
+      dto: CreateCareerPostDto,
       method: 'createCareerPost',
     },
     traffic: {
       service: this.trafficService,
-      dto: CreateUserDto,
+      dto: CreateTrafficDto,
       method: 'createTraffic',
     },
     clients: {
       service: this.clientsService,
-      dto: CreateUserDto,
+      dto: CreateClientDto,
       method: 'createClient',
     },
     billing: {
       service: this.billingService,
-      dto: CreateUserDto,
+      dto: CreateBillingDto,
       method: 'createBilling',
     },
     businessCompanies: {
       service: this.businessCompaniesService,
-      dto: CreateUserDto,
+      dto: CreateBusinessAccountDto,
       method: 'createBusinessCompany',
     },
     jobPages: {
       service: this.jobPagesService,
-      dto: CreateUserDto,
+      dto: CreateJobPageDto,
       method: 'createJobPage',
     },
     hiring: {
       service: this.hiringService,
-      dto: CreateUserDto,
+      dto: CreateHiringDto,
       method: 'createHiring',
     },
     locations: {
       service: this.locationsService,
-      dto: CreateUserDto,
+      dto: CreateLocationDto,
       method: 'createLocation',
     },
     businessJobs: {
       service: this.businessJobsService,
-      dto: CreateUserDto,
+      dto: CreateBusinessJobDto,
       method: 'createBusinessJob',
     },
     organizations: {
       service: this.organizationsService,
-      dto: CreateUserDto,
+      dto: CreateOrganizationDto,
       method: 'createOrganization',
     },
     pages: {
       service: this.pagesService,
-      dto: CreateUserDto,
+      dto: CreatePageDto,
       method: 'createPage',
     },
     invitations: {
       service: this.invitationsService,
-      dto: CreateUserDto,
+      dto: CreateInvitationDto,
       method: 'createInvitation',
     },
     posts: {
       service: this.postsService,
-      dto: CreateUserDto,
+      dto: CreatePostDto,
       method: 'createPost',
     },
   };
@@ -156,55 +179,57 @@ export class KafkaService implements OnModuleInit {
     private readonly postsService: PostsService,
   ) {
     this.topicName = this.configService.get<string>(
-      'kafka.topic',
+      'KAFKA_TOPIC',
       'defaultTopic',
     );
   }
 
-  /**
-   * Initialize the module and connect to Kafka.
-   */
+  @Client({
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        clientId: process.env.KAFKA_CLIENT_ID,
+        brokers: process.env.KAFKA_BROKERS?.split(',') ?? [],
+      },
+      consumer: {
+        groupId: process.env.KAFKA_CONSUMER_GROUP_ID || 'defaultGroupId',
+      },
+    },
+  })
+  private client: ClientKafka = new ClientKafka({});
+
   async onModuleInit() {
     try {
+      this.logger.log('Initializing Kafka Module...');
+      this.client.subscribeToResponseOf(process.env.KAFKA_TOPIC);
       await this.clientKafka.connect();
       this.logger.log(`Kafka connected and subscribed to ${this.topicName}`);
-      this.clientKafka.subscribeToResponseOf(this.topicName);
     } catch (error: any) {
-      this.logger.error(`Kafka connection failed: ${error.message}`);
+      this.logger.error(`Kafka connection failed: ${error.message}`, error.stack);
     }
   }
 
-  /**
-   * Produce a message to a specific Kafka topic.
-   * @param topic The topic to send the message to.
-   * @param message The message to send.
-   */
-  async produceMessage(topic: string, message: string) {
-    this.logger.log(
-      `Sending message to topic ${topic}: ${JSON.stringify(message)}`,
-    );
-    await this.clientKafka.emit(topic, message);
-    this.logger.log(`Message sent to topic ${topic}`);
-    await this.handleMetric(message);
+  async onModuleDestroy() {
+    this.logger.log('Closing Kafka connection...');
+    await this.clientKafka.close();
+    this.logger.log('Kafka connection closed');
   }
 
-  /**
-   * Handle the incoming Kafka message and process the metric.
-   * @param message The Kafka message payload.
-   */
-  async handleMetric(@Payload() message: string): Promise<void> {
+  async produceMessage(topic: string, message: any) {
+    this.logger.log(`Sending message to topic ${topic}: ${JSON.stringify(message)}`);
+    try {
+      this.clientKafka.emit(topic, message);
+      this.clientKafka.subscribeToResponseOf(topic);
+      this.logger.log(`Message sent to topic ${topic}`);
+    } catch (error: any) {
+      this.logger.error(`Failed to send message to topic ${topic}: ${error.message}`, error.stack);
+    }
+  }
+
+  async handleMetric(@Payload() message: any): Promise<void> {
     this.logger.log(`Received message: ${JSON.stringify(message)}`);
 
-    let metric: any;
-    try {
-      metric = JSON.parse(JSON.stringify(message));
-      this.logger.log(`Deserialized message: ${JSON.stringify(metric)}`);
-    } catch (error: any) {
-      this.logger.error('Error deserializing message:', error);
-      return;
-    }
-
-    const { type, data } = metric;
+    const { type, data } = message;
 
     if (!this.sourceMap[type]) {
       this.logger.error(`Unknown metric type: ${type}`);
@@ -214,30 +239,29 @@ export class KafkaService implements OnModuleInit {
     const { service, dto, method } = this.sourceMap[type];
 
     try {
-      const instance = Object.assign(new dto(), data);
-      this.logger.log(
-        `Calling ${type}Service.${method} with data: ${JSON.stringify(instance)}`,
-      );
-      await service[method](instance);
-      this.logger.log(
-        `${type.charAt(0).toUpperCase() + type.slice(1)} metric processed successfully`,
-      );
+      this.logger.log(`Data received for ${type}: ${JSON.stringify(data)}`);
 
-      await this.clientKafka.emit(process.env.KAFKA_CONFIRMATION_TOPIC, {
+      const instance = Object.assign(new dto(), data);
+      this.logger.log(`DTO instance created: ${JSON.stringify(instance)}`);
+
+      this.logger.log(`Calling ${type}Service.${method} with data: ${JSON.stringify(instance)}`);
+      await service[method](instance);
+      this.logger.log(`${type.charAt(0).toUpperCase() + type.slice(1)} metric processed successfully`);
+
+      this.clientKafka.emit(process.env.KAFKA_CONFIRMATION_TOPIC, {
         status: 'success',
         type,
         data: instance,
       });
       this.logger.log('Confirmation message sent to Kafka');
     } catch (error: any) {
-      this.logger.error(`Error processing ${type} metric: ${error.message}`);
+      this.logger.error(`Error processing ${type} metric: ${error.message}`, error.stack);
 
-      await this.clientKafka.emit(process.env.KAFKA_ERROR_TOPIC, {
+      this.clientKafka.emit(process.env.KAFKA_ERROR_TOPIC, {
         status: 'error',
         type,
         message: error.message,
       });
-      this.logger.log('Error message sent to Kafka');
     }
   }
 }

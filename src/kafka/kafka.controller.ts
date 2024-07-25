@@ -1,5 +1,5 @@
-import { Body, Controller, Logger, Post } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { Body, Controller, Inject, Logger, Post } from '@nestjs/common';
+import { ClientKafka, MessagePattern, Payload } from '@nestjs/microservices';
 import { KafkaService } from './kafka.service';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -8,14 +8,11 @@ import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 export class KafkaController {
   private readonly logger = new Logger(KafkaController.name);
 
-  constructor(private readonly kafkaService: KafkaService) {}
+  constructor(
+    private readonly kafkaService: KafkaService,
+    @Inject('KAFKA_SERVICE') private readonly clientKafka: ClientKafka
+  ) { }
 
-  /**
-   * Sends a message to the specified Kafka topic
-   * @param topic - The Kafka topic to send the message to
-   * @param message - The message to send
-   * @returns A status object indicating the result of the operation
-   */
   @Post('send')
   @ApiOperation({ summary: 'Send a message to a Kafka topic' })
   @ApiBody({
@@ -26,22 +23,15 @@ export class KafkaController {
         message: {
           type: 'object',
           properties: {
-            type: { type: 'string', example: 'invitations' },
+            type: { type: 'string', example: 'users' },
             data: {
               type: 'object',
               properties: {
-                sentDate: {
-                  type: 'string',
-                  format: 'date',
-                  example: '2023-08-17',
-                },
-                acceptedDate: {
-                  type: 'string',
-                  format: 'date',
-                  example: '2023-08-18',
-                },
-                status: { type: 'string', example: 'Accepted' },
-                userId: { type: 'integer', example: 1 },
+                accountId: { type: 'number', example: 34 },
+                locationId: { type: 'number', example: 34 },
+                language: { type: 'string', example: 'en' },
+                connectionsData: { type: 'string', example: 'Facebook' },
+                onboardingId: { type: 'number', example: 34 },
               },
             },
           },
@@ -55,24 +45,25 @@ export class KafkaController {
     @Body('topic') topic: string,
     @Body('message') message: any,
   ) {
-    this.logger.log(
-      `Sending message to topic ${topic}: ${JSON.stringify(message)}`,
-    );
-    await this.kafkaService.produceMessage(topic, message);
-    return { status: 'Message sent' };
+    await this.produceMessage(topic, message);
   }
 
-  /**
-   * Handles incoming messages from the 'analytics-reports' Kafka topic
-   * @param message - The received message
-   */
+  async produceMessage(topic: string, message: any) {
+    this.logger.log(`Sending message to topic ${topic}: ${JSON.stringify(message)}`);
+    this.clientKafka.emit(topic, message);
+    this.logger.log(`Message sent to topic ${topic}`);
+    this.handleMetric(message);
+  }
+
   @MessagePattern('analytics-reports')
-  @ApiOperation({ summary: 'Handle incoming messages from Kafka' })
-  @ApiResponse({ status: 200, description: 'Message processed successfully.' })
-  @ApiResponse({ status: 500, description: 'Internal server error.' })
   async handleMetric(@Payload() message: any) {
-    this.logger.log(`Received message: ${JSON.stringify(message)}`);
-    await this.kafkaService.handleMetric(message);
-    this.logger.log(`Message processed`);
+    this.logger.log(`Controller received message: ${JSON.stringify(message)}`);
+
+    try {
+      await this.kafkaService.handleMetric(message);
+      this.logger.log(`Message processed`);
+    } catch (error: any) {
+      this.logger.error(`Error processing message: ${error.message}`, error.stack);
+    }
   }
 }

@@ -27,4 +27,4 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
   ],
   exports: [ClientsService],
 })
-export class ClientModule {}
+export class ClientModule { }

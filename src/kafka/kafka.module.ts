@@ -25,6 +25,9 @@ import { PostsModule } from '../post/post.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     ClientsModule.registerAsync([
       {
         name: 'KAFKA_SERVICE',
@@ -40,16 +43,6 @@ import { PostsModule } from '../post/post.module';
               },
               consumer: {
                 groupId: groupId || 'default-group',
-              },
-              serializer: {
-                serialize: (value) => ({
-                  value: JSON.stringify(value),
-                }),
-              },
-              deserializer: {
-                deserialize: (value) => ({
-                  value: JSON.parse(value.value.toString()),
-                }),
               },
             },
           };
@@ -81,4 +74,4 @@ import { PostsModule } from '../post/post.module';
   controllers: [KafkaController],
   exports: [KafkaService],
 })
-export class KafkaModule {}
+export class KafkaModule { }

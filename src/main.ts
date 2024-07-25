@@ -7,6 +7,7 @@ import { DataSource } from 'typeorm';
 import { Logger } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpExceptionFilter } from './http-exception/http-exception.filter';
+import { Transport } from '@nestjs/microservices';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -23,6 +24,20 @@ async function bootstrap() {
   const logger = new Logger('bootstrap');
   // Create a new NestJS application instance
   const app = await NestFactory.create(AppModule);
+
+  const kafkaMicroservice = app.connectMicroservice({
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        brokers: [process.env.KAFKA_BROKERS],
+      },
+      consumer: {
+        groupId: process.env.KAFKA_GROUP_ID,
+      },
+    },
+  });
+  app.startAllMicroservices();
+
 
   // Setup middleware
   setupMiddleware(app);

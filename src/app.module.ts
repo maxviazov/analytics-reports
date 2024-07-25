@@ -66,9 +66,9 @@ import { InvitationsModule } from './invitation/invitation.module';
         imports: [ConfigModule],
         inject: [ConfigService],
         useFactory: async (configService: ConfigService) => {
-          const brokers = configService.get<string[]>('kafka.brokers');
-          const clientId = configService.get<string>('kafka.clientId');
-          const groupId = configService.get<string>('kafka.groupId');
+          const brokers = configService.get<string>('KAFKA_BROKERS');
+          const clientId = configService.get<string>('KAFKA_CLIENT_ID');
+          const groupId = configService.get<string>('KAFKA_GROUP_ID');
 
           if (!brokers || !clientId || !groupId) {
             throw new Error('Kafka configuration is invalid');
@@ -78,7 +78,7 @@ import { InvitationsModule } from './invitation/invitation.module';
             transport: Transport.KAFKA,
             options: {
               client: {
-                brokers,
+                brokers: brokers.split(','),
                 clientId,
               },
               consumer: {
