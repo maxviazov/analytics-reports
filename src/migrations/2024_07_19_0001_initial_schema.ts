@@ -53,10 +53,10 @@ exports.up = async function (knex: import('knex').Knex): Promise<void> {
     table.increments('id').primary();
     table.integer('account_id').unsigned().references('id').inTable('account');
     table
-      .integer('location_id')
+      .integer('locations_id')
       .unsigned()
       .references('id')
-      .inTable('location');
+      .inTable('locations');
     table.string('language', 50);
     table.string('connections_data', 255);
     table
@@ -94,10 +94,10 @@ exports.up = async function (knex: import('knex').Knex): Promise<void> {
     table.increments('id').primary();
     table.string('traffic_source', 255);
     table
-      .integer('location_id')
+      .integer('locations_id')
       .unsigned()
       .references('id')
-      .inTable('location');
+      .inTable('locations');
     table
       .integer('landing_page_id')
       .unsigned()
@@ -147,10 +147,10 @@ exports.up = async function (knex: import('knex').Knex): Promise<void> {
     table.date('create_date');
     table.date('update_date');
     table
-      .integer('location_id')
+      .integer('locations_id')
       .unsigned()
       .references('id')
-      .inTable('location');
+      .inTable('locations');
     table.string('type', 255);
     table.integer('company_page_views');
     table.date('business_active_date');
@@ -184,10 +184,10 @@ exports.up = async function (knex: import('knex').Knex): Promise<void> {
       .inTable('business_account');
     table.date('publish_date');
     table
-      .integer('location_id')
+      .integer('locations_id')
       .unsigned()
       .references('id')
-      .inTable('location');
+      .inTable('locations');
     table
       .integer('job_page_id')
       .unsigned()
@@ -271,7 +271,7 @@ exports.down = async function (knex: import('knex').Knex): Promise<void> {
   await knex.schema.dropTableIfExists('users');
   await knex.schema.dropTableIfExists('business_account');
   await knex.schema.dropTableIfExists('landing_page');
-  await knex.schema.dropTableIfExists('location');
+  await knex.schema.dropTableIfExists('locations');
   await knex.schema.dropTableIfExists('onboarding');
   await knex.schema.dropTableIfExists('account');
   await knex.schema.dropTableIfExists('organizations');
