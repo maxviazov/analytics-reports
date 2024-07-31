@@ -229,7 +229,7 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
   async handleMetric(@Payload() message: any): Promise<void> {
     this.logger.log(`Received message: ${JSON.stringify(message)}`);
 
-    const { type, data } = message;
+    const { type, data } = message.message;
 
     if (!this.sourceMap[type]) {
       this.logger.error(`Unknown metric type: ${type}`);
