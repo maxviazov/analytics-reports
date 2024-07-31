@@ -20,7 +20,7 @@ exports.up = async function (knex: import('knex').Knex): Promise<void> {
     table.date('complete_date');
   });
 
-  await knex.schema.createTable('location', function (table) {
+  await knex.schema.createTable('locations', function (table) {
     table.increments('id').primary();
     table.string('continent', 255);
     table.string('country', 255);
