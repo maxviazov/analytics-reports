@@ -78,3 +78,5 @@ __pycache__/
 .flaskenv*
 !.env.project
 !.env.vault
+.wt
+data/

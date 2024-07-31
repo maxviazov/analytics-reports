@@ -1,0 +1,33 @@
+receivers:
+  otlp:
+    protocols:
+      grpc: {}
+      http: {}
+
+processors:
+  batch:
+  filter:
+    metrics:
+      include:
+        match_type: strict
+        metric_names:
+          - "account.metric"
+          - "onboarding.metric"
+          - "user.metric"
+          - "invitations.metric"
+
+exporters:
+  kafka:
+    brokers: ["ec2-54-144-119-253.compute-1.amazonaws.com:9092"]
+    topic: "analytics-reports"
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [kafka]
+    metrics:
+      receivers: [otlp]
+      processors: [batch, filter]
+      exporters: [kafka]
