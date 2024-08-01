@@ -65,8 +65,7 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 .yarn-integrity
 
 # Docker configuration files
-.docker/
-docker-compose*.yml
+.docker.ignore
 
 # Python temporary files
 *.py[cod]
